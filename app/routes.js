@@ -1,5 +1,6 @@
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
+var cors = require('cors');
 
 var connection = mysql.createConnection({
     host:'den1.mysql1.gear.host',
@@ -13,6 +14,9 @@ connection.connect(function(err) {
 });
 
 module.exports = function (app) {
+    
+    app.use(cors());
+    
     //test get, default link
     app.get('/', function (req, res) {
         res.send('Howdy!');
