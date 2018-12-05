@@ -33,7 +33,8 @@ module.exports = function (app) {
     
     app.use(function(req, res, next) {
         console.log(req.headers.origin);
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        res.header( 'Access-Control-Allow-Origin', "*" );
+        res.header('Access-Control-Allow-Methods', 'GET,POST');
         return next();
     });
 
@@ -57,7 +58,7 @@ module.exports = function (app) {
     //need username, password, name, color, life
     //if user already there then send back 'user already exist', if all success 'inserted new user'
     app.post('/newuser', function(req,res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `SELECT * FROM users WHERE username = '${req.body.username}';`;
         connection.query(sql, function(err1, result1) {
             if (err1) throw err1;
@@ -86,7 +87,7 @@ module.exports = function (app) {
     //need username, password
     //returns 'user not found if username doesnt exist, 'wrong password' if wrong password, catID if authentication successful
     app.post('/checkuser', function(req,res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `SELECT * FROM users WHERE username = '${req.body.username}';`
         connection.query(sql, function(err, result) {
             if (err) throw err;
@@ -111,7 +112,7 @@ module.exports = function (app) {
     //FOR CLICKING NEW CAT AFTER CAT DIED: insert new cat
     //need name, color, life
     app.post('/newcat', function(req, res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `INSERT INTO cats (catName, color, lifeStatus) VALUES ('${req.param.name}','${req.body.color}','${req.body.life}');`;
         //res.send(sql);
         connection.query(sql, function(err, result) {
@@ -134,7 +135,7 @@ module.exports = function (app) {
 
     //update when showered, need catID and shower TS
     app.post('/updatecat/shower', function(req,res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `UPDATE cats SET cleanlinessTS = '${req.body.shower}' WHERE catID = ${req.body.catID}`;
         connection.query(sql, function(err, result) {
             if (err) throw err;
@@ -145,7 +146,7 @@ module.exports = function (app) {
 
     //update when sleep, need catID and sleep TS
     app.post('/updatecat/sleep', function(req,res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `UPDATE cats SET sleepinessTS = '${req.body.sleep}' WHERE catID = ${req.body.catID}`;
         connection.query(sql, function(err, result) {
             if (err) throw err;
@@ -157,7 +158,7 @@ module.exports = function (app) {
     //update lifeStatus when a cat is dead
     //needs catID
     app.post('/dead', function(req,res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `UPDATE cats SET lifeStatus = 0 WHERE catID = ${req.body.catID}`;
         connection.query(sql, function(err, result) {
             if (err) throw err;
@@ -168,7 +169,7 @@ module.exports = function (app) {
     //revive cat
     //needs catID
     app.post('/revive', function(req,res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `UPDATE cats SET lifeStatus = 1 WHERE catID = ${req.body.catID}`;
         connection.query(sql, function(err, result) {
             if (err) throw err;
@@ -179,7 +180,7 @@ module.exports = function (app) {
     //PULLING A CAT AFTER LOGGING IN: get a cat
     //getcat?catid=2
     app.get('/getcat', function(req,res) {
-        res.setHeader( "Access-Control-Allow-Origin", "*" );
+        //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `SELECT * FROM cats WHERE catID = ${req.param('catid')};`
         connection.query(sql, function (err, result) {
             if (err) throw err;
