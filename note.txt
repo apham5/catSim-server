@@ -1,0 +1,4 @@
+Installed packages:
+express
+mysql
+body-parser for POST requests
