@@ -1,6 +1,8 @@
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var cors = require('cors');
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 var connection = mysql.createConnection({
     host:'den1.mysql1.gear.host',
@@ -61,27 +63,31 @@ module.exports = function (app) {
     app.post('/newuser', function(req,res) {
         //res.setHeader( "Access-Control-Allow-Origin", "*" );
         var sql = `SELECT * FROM users WHERE username = '${req.body.username}';`;
-        connection.query(sql, function(err1, result1) {
-            if (err1) throw err1;
-            if (result1[0]!= undefined) {
-                res.send("user already exist");
-            }
-            else {
-                sql = `INSERT INTO cats (catName, color, lifeStatus) VALUES ('${req.body.name}','${req.body.color}',${req.body.life});`;
-                connection.query(sql, function(err2, result2) {
-                    if (err2) throw err2;
-                    //console.log('inserted new cat');
-                    console.log(result2.insertId);
-                    sql = `INSERT INTO users (username, password, catID) VALUES ('${req.body.username}','${req.body.password}',${result2.insertId});`;
-                    console.log(sql);
-                    connection.query(sql, function(err3, result3) {
-                        if (err3) throw err3;
-                        console.log('inserted new user');
-                        res.send("inserted new user");
+        bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+            if (err) throw err;
+            connection.query(sql, function(err1, result1) {
+                if (err1) throw err1;
+                if (result1[0]!= undefined) {
+                    res.send("user already exist");
+                }
+                else {
+                    sql = `INSERT INTO cats (catName, color, lifeStatus) VALUES ('${req.body.name}','${req.body.color}',${req.body.life});`;
+                    connection.query(sql, function(err2, result2) {
+                        if (err2) throw err2;
+                        //console.log('inserted new cat');
+                        console.log("Hashed password:" + hash);
+                        sql = `INSERT INTO users (username, password, catID) VALUES ('${req.body.username}','${hash}',${result2.insertId});`;
+                        console.log(sql);
+                        connection.query(sql, function(err3, result3) {
+                            if (err3) throw err3;
+                            console.log('inserted new user');
+                            res.send("inserted new user");
+                        });
                     });
-                });
-            }
-        }); 
+                }
+            }); 
+        });
+        
     });
 
     //FOR LOG IN: cross check username/password and return cat id of that person
@@ -98,14 +104,16 @@ module.exports = function (app) {
             else {
                 var thePassword = result[0].password;
                 console.log(thePassword);
-                console.log(req.body.password);
-                if (req.body.password.localeCompare(thePassword) != 0) {
-                    res.send('wrong password');
-                }
-                else {
-                    console.log(result[0].catID);
-                    res.send((result[0].catID).toString());
-                }
+                // console.log(req.body.password);
+                bcrypt.compare(req.body.password, thePassword, function(err1, match) {
+                    if (err1) throw err1;
+                    if (!match) {
+                        res.send('wrong password');
+                    }
+                    else {
+                        res.send((result[0].catID).toString());
+                    }
+                });
             }
         });
     });
