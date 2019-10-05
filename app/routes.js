@@ -5,9 +5,9 @@ var bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 var connection = mysql.createConnection({
-    host:'den1.mysql1.gear.host',
+    host:'den1.mysql6.gear.host',
     user:'catsim',
-    password:'Ik8H--1C8O2D',
+    password:'Ly363p!H0x~O',
     database:'catsim'
 });
 
